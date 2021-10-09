@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import com.renan.bookstore.domain.Categoria;
 import com.renan.bookstore.dtos.CategoriaDTO;
 import com.renan.bookstore.repositories.CategoriaRepository;
+import com.renan.bookstore.service.exceptions.DataIntegrityViolationException;
 import com.renan.bookstore.service.exceptions.ObjectNotFoundException;
 
 @Service
@@ -42,6 +43,10 @@ public class CategoriaService {
 
 	public void delete(Integer id) {
 		findById(id);
-		repository.deleteById(id);
+		try {
+			repository.deleteById(id);
+		} catch (org.springframework.dao.DataIntegrityViolationException e) {
+			throw new com.renan.bookstore.service.exceptions.DataIntegrityViolationException("Objeto não pode ser excluído. Possuí livros associados.");
+		}
 	}
 }
